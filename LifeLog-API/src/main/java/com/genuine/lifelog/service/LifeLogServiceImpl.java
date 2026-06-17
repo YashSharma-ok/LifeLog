@@ -238,4 +238,11 @@ public class LifeLogServiceImpl implements LifeLogService {
 
         return err;
     }
+
+	@Override
+	public List<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit) {
+		return LifeLogUtils.noteEntityListToDtoList(
+                noteRepository.searchByKeyword(keyword)
+        );
+	}
 }

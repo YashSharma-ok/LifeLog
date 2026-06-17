@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
         ExceptionResponse response =
                 new ExceptionResponse(
                         "failure",
-                        "Something went wrong. Please try again later.",
+                        "An error occurred.",
                         null,
                         List.of(e.getMessage())
                 );

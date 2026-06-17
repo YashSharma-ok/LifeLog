@@ -17,5 +17,6 @@ public interface LifeLogService {
 	public List<NoteResponse> getAllNotes(Long page, Long limit);
 	public List<NoteResponse> getTrashedNotes(Long page, Long limit);
 	public List<NoteResponse> findNotesByTagNames(List<String> tagNames);
+	public List<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit);
 	
 }

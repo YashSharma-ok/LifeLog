@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.genuine.lifelog.dto.request.NoteRequest;
+import com.genuine.lifelog.dto.request.SearchNoteRequest;
 import com.genuine.lifelog.dto.response.LifeLogResponse;
 import com.genuine.lifelog.dto.response.NoteResponse;
 import com.genuine.lifelog.service.LifeLogService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("memo/")
@@ -89,5 +91,27 @@ public class LifeLogController {
         res.setData(noteRes);
 
         return ResponseEntity.ok(res);
+    }
+    
+    @PostMapping("notes/search")
+    public ResponseEntity<LifeLogResponse> searchNotes(@RequestBody @NotNull SearchNoteRequest request) throws Exception {
+    	LifeLogResponse res = new LifeLogResponse();
+    	List<NoteResponse> noteRes = List.of();
+//    	if(request != null && (!LifeLogUtils.checkNotBlank(request.getContent()) && !LifeLogUtils.checkNotBlank(request.getTitle()) && (request.getTags() == null || request.getTags().isEmpty()))) {
+    	if(request != null && (request.getText() == null || request.getText() == "")) {
+    		noteRes = this.service.getAllNotes(null, null);
+    	} else {
+    		noteRes = this.service.getSearchedNotes(request.getText(),null, null);
+    	}
+    	
+        res.setStatus("success");
+        if (noteRes == null || noteRes.size() == 0)
+            res.setMessage("No note is found");
+        else
+            res.setMessage("Notes have been successfully fetched!");
+        res.setData(noteRes);
+
+        return ResponseEntity.ok(res);
+
     }
 }
