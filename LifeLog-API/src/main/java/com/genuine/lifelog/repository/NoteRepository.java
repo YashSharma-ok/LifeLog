@@ -3,6 +3,8 @@ package com.genuine.lifelog.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +16,7 @@ import com.genuine.lifelog.entity.Note;
 public interface NoteRepository extends JpaRepository<Note, Long> {
 	@Query("SELECT n FROM Note n JOIN FETCH n.tags")
 	List<Note> findAllWithTags();
-	List<Note> findByIsTrashedNot(Boolean isTrash);
+	Page<Note> findByIsTrashedNot(Boolean isTrash, Pageable pageable);
 	List<Note> findByIsTrashed(Boolean string);
 	
 	@Query("SELECT DISTINCT n FROM Note n " +

@@ -3,6 +3,9 @@ package com.genuine.lifelog.utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import com.genuine.lifelog.dto.response.NoteResponse;
 import com.genuine.lifelog.entity.Note;
 import com.genuine.lifelog.entity.Tag;
@@ -53,6 +56,14 @@ public class LifeLogUtils {
 			list.add(noteEntityToDto(note));
 		}
 		return list;
+	}
+
+	public static Pageable decrementPageNumber(Pageable pageable) {
+
+    	if(pageable != null && pageable.getPageNumber() > 0)
+    		return PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+    	
+		return pageable;
 	}
 
 }

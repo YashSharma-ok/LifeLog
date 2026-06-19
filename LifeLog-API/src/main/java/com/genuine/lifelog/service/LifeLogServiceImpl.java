@@ -2,7 +2,10 @@ package com.genuine.lifelog.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.genuine.lifelog.dto.request.NoteRequest;
@@ -106,6 +109,11 @@ public class LifeLogServiceImpl implements LifeLogService {
                         )
                 );
 
+        if(entityNote.getIsTrashed() && entityNote.getIsTrashed().booleanValue()) {
+        	throw new ValidationException(
+                    "Note is already trashed!", null
+            );
+        }
         entityNote.setIsTrashed(true);
 
         Note savedNote = noteRepository.save(entityNote);
@@ -120,25 +128,28 @@ public class LifeLogServiceImpl implements LifeLogService {
 
     @Override
     public NoteResponse getNoteById(Long id) {
-        return null;
+    	Optional<Note> note = this.noteRepository.findById(id);
+    	if(note.isPresent())
+    		return LifeLogUtils.noteEntityToDto(note.get());
+    	throw new ResourceNotFoundException();
     }
 
     @Override
-    public List<NoteResponse> getAllNotes(Long page, Long limit) {
-        return LifeLogUtils.noteEntityListToDtoList(
-                noteRepository.findByIsTrashedNot(true)
-        );
+    public Page<NoteResponse> getAllNotes(Pageable pageable) {
+    	Page<Note> page = noteRepository.findByIsTrashedNot(true, pageable);    	
+        return page.map(LifeLogUtils::noteEntityToDto);
     }
 
     @Override
-    public List<NoteResponse> getTrashedNotes(Long page, Long limit) {
-        return LifeLogUtils.noteEntityListToDtoList(
-                noteRepository.findByIsTrashed(true)
-        );
+    public Page<NoteResponse> getTrashedNotes(Long page, Long limit) {
+//        return LifeLogUtils.noteEntityListToDtoList(
+//                noteRepository.findByIsTrashed(true)
+//        );
+    	return null;
     }
 
     @Override
-    public List<NoteResponse> findNotesByTagNames(List<String> tagNames) {
+    public Page<NoteResponse> findNotesByTagNames(List<String> tagNames) {
         return null;
     }
 
@@ -240,9 +251,10 @@ public class LifeLogServiceImpl implements LifeLogService {
     }
 
 	@Override
-	public List<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit) {
-		return LifeLogUtils.noteEntityListToDtoList(
-                noteRepository.searchByKeyword(keyword)
-        );
+	public Page<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit) {
+//		return LifeLogUtils.noteEntityListToDtoList(
+//                noteRepository.searchByKeyword(keyword)
+//        );
+		return null; 
 	}
 }

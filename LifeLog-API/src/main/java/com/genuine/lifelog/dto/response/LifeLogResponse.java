@@ -3,13 +3,17 @@ package com.genuine.lifelog.dto.response;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class LifeLogResponse {
+public class LifeLogResponse extends PagedResponse {
 
 	private String status;
 	private String message;
