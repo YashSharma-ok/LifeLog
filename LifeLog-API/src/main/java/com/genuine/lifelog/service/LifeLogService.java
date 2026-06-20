@@ -17,8 +17,8 @@ public interface LifeLogService {
 	
 	public NoteResponse getNoteById(Long id);
 	public Page<NoteResponse> getAllNotes(Pageable pageable);
-	public Page<NoteResponse> getTrashedNotes(Long page, Long limit);
+	public Page<NoteResponse> getTrashedNotes(Pageable pageable);
 	public Page<NoteResponse> findNotesByTagNames(List<String> tagNames);
-	public Page<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit);
+	public Page<NoteResponse> getSearchedNotes(String keyword, Pageable pageable);
 	
 }

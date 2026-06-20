@@ -1,7 +1,5 @@
 package com.genuine.lifelog.repository;
 
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +13,9 @@ import com.genuine.lifelog.entity.Note;
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
 	@Query("SELECT n FROM Note n JOIN FETCH n.tags")
-	List<Note> findAllWithTags();
+	Page<Note> findAllWithTags(Pageable pageable);
 	Page<Note> findByIsTrashedNot(Boolean isTrash, Pageable pageable);
-	List<Note> findByIsTrashed(Boolean string);
+	Page<Note> findByIsTrashed(Boolean isTrash, Pageable pageable);
 	
 	@Query("SELECT DISTINCT n FROM Note n " +
 	           "LEFT JOIN n.tags t " +
@@ -25,5 +23,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 	           "OR LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
 	           "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%')))" +
 	           "AND n.isTrashed = false")
-	List<Note> searchByKeyword(@Param("keyword") String keyword);
+	Page<Note> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

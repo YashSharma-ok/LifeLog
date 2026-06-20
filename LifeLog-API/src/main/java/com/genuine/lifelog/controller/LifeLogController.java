@@ -38,8 +38,6 @@ public class LifeLogController {
 
     @GetMapping("notes")
     public ResponseEntity<LifeLogResponse> getNotes(Pageable pageable) throws Exception {
-    	pageable = LifeLogUtils.decrementPageNumber(pageable);
-    	
         LifeLogResponse res = new LifeLogResponse();
         Page<NoteResponse> noteResPage = this.service.getAllNotes(pageable);
         res.setStatus("success");
@@ -68,17 +66,15 @@ public class LifeLogController {
     }
 
     @GetMapping("notes/trash")
-    public ResponseEntity<LifeLogResponse> getTrashedNotes(Pageable pageable) throws Exception {
-    	pageable = LifeLogUtils.decrementPageNumber(pageable);
-    	
+    public ResponseEntity<LifeLogResponse> getTrashedNotes(Pageable pageable) throws Exception {    	
         LifeLogResponse res = new LifeLogResponse();
-        Page<NoteResponse> noteRes = this.service.getTrashedNotes(null, null);
+        Page<NoteResponse> noteRes = this.service.getTrashedNotes(pageable);
         res.setStatus("success");
         if (noteRes == null || noteRes.getContent().size() == 0)
             res.setMessage("No trashed notes");
         else
             res.setMessage("Trashed notes have been successfully fetched!");
-        res.setData(noteRes);
+        res.setData(noteRes.getContent());
         
 
         return ResponseEntity.ok(res);
@@ -124,15 +120,13 @@ public class LifeLogController {
     
     @PostMapping("notes/search")
     public ResponseEntity<LifeLogResponse> searchNotes(@RequestBody @NotNull SearchNoteRequest request, Pageable pageable) throws Exception {
-    	pageable = LifeLogUtils.decrementPageNumber(pageable);
-    	
     	LifeLogResponse res = new LifeLogResponse();
     	Page<NoteResponse> noteResPage;
 //    	if(request != null && (!LifeLogUtils.checkNotBlank(request.getContent()) && !LifeLogUtils.checkNotBlank(request.getTitle()) && (request.getTags() == null || request.getTags().isEmpty()))) {
     	if(request != null && (request.getText() == null || request.getText() == "")) {
     		noteResPage = this.service.getAllNotes(pageable);
     	} else {
-    		noteResPage = this.service.getSearchedNotes(request.getText(),null, null);
+    		noteResPage = this.service.getSearchedNotes(request.getText(), pageable);
     	}
     	
         res.setStatus("success");
@@ -140,7 +134,7 @@ public class LifeLogController {
             res.setMessage("No note is found");
         else
             res.setMessage("Notes have been successfully fetched!");
-        res.setData(noteResPage);
+        res.setData(noteResPage.getContent());
         res.setPagenation(noteResPage);
 
         return ResponseEntity.ok(res);

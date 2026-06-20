@@ -14,6 +14,7 @@ import com.genuine.lifelog.entity.Note;
 import com.genuine.lifelog.entity.Tag;
 import com.genuine.lifelog.exception.ResourceNotFoundException;
 import com.genuine.lifelog.exception.ValidationException;
+import com.genuine.lifelog.helper.LifeLogServiceHelper;
 import com.genuine.lifelog.repository.NoteRepository;
 import com.genuine.lifelog.repository.TagRepository;
 import com.genuine.lifelog.utility.LifeLogUtils;
@@ -35,7 +36,7 @@ public class LifeLogServiceImpl implements LifeLogService {
     @Override
     public NoteResponse addNote(NoteRequest note) {
 
-        List<String> errors = validateNoteForAdd(note);
+        List<String> errors = LifeLogServiceHelper.validateNoteForAdd(note);
 
         if (!errors.isEmpty()) {
             throw new ValidationException(
@@ -62,7 +63,7 @@ public class LifeLogServiceImpl implements LifeLogService {
     @Override
     public NoteResponse updateNote(NoteRequest note) {
 
-        List<String> errors = validateNoteForUpdate(note);
+        List<String> errors = LifeLogServiceHelper.validateNoteForUpdate(note);
 
         if (!errors.isEmpty()) {
             throw new ValidationException(
@@ -141,17 +142,22 @@ public class LifeLogServiceImpl implements LifeLogService {
     }
 
     @Override
-    public Page<NoteResponse> getTrashedNotes(Long page, Long limit) {
-//        return LifeLogUtils.noteEntityListToDtoList(
-//                noteRepository.findByIsTrashed(true)
-//        );
-    	return null;
+    public Page<NoteResponse> getTrashedNotes(Pageable pageable) {
+    	Page<Note> page = noteRepository.findByIsTrashed(true, pageable);    	
+    	return page.map(LifeLogUtils::noteEntityToDto);
     }
 
     @Override
     public Page<NoteResponse> findNotesByTagNames(List<String> tagNames) {
         return null;
     }
+
+	@Override
+	public Page<NoteResponse> getSearchedNotes(String keyword, Pageable pageable) {
+		Page<Note> page =  noteRepository.searchByKeyword(keyword, pageable);
+		return page.map(LifeLogUtils::noteEntityToDto);
+	}
+	
 
     private List<Tag> processTags(List<String> tags) {
 
@@ -183,78 +189,10 @@ public class LifeLogServiceImpl implements LifeLogService {
 
         existingTags.addAll(
                 tagRepository.saveAll(
-                        getListOfTagByNames(newTags)
+                        LifeLogServiceHelper.getListOfTagByNames(newTags)
                 )
         );
 
         return existingTags;
     }
-
-    private List<Tag> getListOfTagByNames(
-            List<String> tags
-    ) {
-
-        if (tags == null) {
-            return new ArrayList<>();
-        }
-
-        return tags.stream()
-                .map(tag -> {
-                    Tag t = new Tag();
-                    t.setName(tag);
-                    return t;
-                })
-                .toList();
-    }
-
-    private List<String> validateNoteForAdd(
-            NoteRequest note
-    ) {
-
-        List<String> err = new ArrayList<>();
-
-        if (!LifeLogUtils.checkNotBlank(
-                note.getContent())) {
-            err.add("Content is required");
-        }
-
-        if (!LifeLogUtils.checkNotBlank(
-                note.getTitle())) {
-            err.add("Title is required");
-        }
-
-        return err;
-    }
-
-    private List<String> validateNoteForUpdate(
-            NoteRequest note
-    ) {
-
-        List<String> err = new ArrayList<>();
-
-        if (!LifeLogUtils.checkIdValid(
-                note.getId())) {
-            err.add("Invalid note Id");
-        }
-
-        if (!LifeLogUtils.checkNotBlank(
-                note.getContent())) {
-            err.add("Content is required");
-        }
-
-        if (!LifeLogUtils.checkNotBlank(
-                note.getTitle())) {
-            err.add("Title is required");
-        }
-
-        return err;
-    }
-
-	@Override
-	public Page<NoteResponse> getSearchedNotes(String keyword, Long page, Long limit) {
-//		return LifeLogUtils.noteEntityListToDtoList(
-//                noteRepository.searchByKeyword(keyword)
-//        );
-		return null; 
-	}
 }
