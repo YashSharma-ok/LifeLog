@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.genuine.lifelog.dto.response.ExceptionResponse;
 
@@ -29,8 +30,25 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(response);
     }
+    
+     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+     public ResponseEntity<ExceptionResponse>
+     validationException(MethodArgumentTypeMismatchException e) {
 
+         ExceptionResponse response =
+                 new ExceptionResponse(
+                         "failure",
+                         e.getMessage(),
+                         null,
+                         List.of(e.getMessage())
+                 );
 
+         return ResponseEntity
+                 .badRequest()
+                 .body(response);
+     }
+    
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
 

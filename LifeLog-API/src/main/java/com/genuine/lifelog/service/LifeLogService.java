@@ -12,10 +12,10 @@ public interface LifeLogService {
 
 	public NoteResponse addNote(NoteRequest note);
 	public NoteResponse updateNote(NoteRequest note);
-	public NoteResponse trashNote(String note);
+	public NoteResponse trashNote(Long noteId);
 	public NoteResponse deleteNote(NoteRequest note);
 	
-	public NoteResponse getNoteById(Long id);
+	public NoteResponse getNoteById(Long noteId);
 	public Page<NoteResponse> getAllNotes(Pageable pageable);
 	public Page<NoteResponse> getTrashedNotes(Pageable pageable);
 	public Page<NoteResponse> findNotesByTagNames(List<String> tagNames);

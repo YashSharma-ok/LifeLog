@@ -89,20 +89,8 @@ public class LifeLogServiceImpl implements LifeLogService {
     }
 
     @Override
-    public NoteResponse trashNote(String noteId) {
-
-        if (!LifeLogUtils.isNumber(noteId)
-                || !LifeLogUtils.checkIdValid(noteId)) {
-
-            throw new ValidationException(
-                    "Unable to trash Note. Please try again!",
-                    List.of("Invalid note Id")
-            );
-        }
-
-        Long id = Long.parseLong(noteId);
-
-        Note entityNote = noteRepository.findById(id)
+    public NoteResponse trashNote(Long noteId) {
+        Note entityNote = noteRepository.findById(noteId)
                 .orElseThrow(() ->
                         new ValidationException(
                                 "Unable to trash Note. Please try again!",
@@ -128,8 +116,8 @@ public class LifeLogServiceImpl implements LifeLogService {
     }
 
     @Override
-    public NoteResponse getNoteById(Long id) {
-    	Optional<Note> note = this.noteRepository.findById(id);
+    public NoteResponse getNoteById(Long noteId) {
+    	Optional<Note> note = this.noteRepository.findById(noteId);
     	if(note.isPresent())
     		return LifeLogUtils.noteEntityToDto(note.get());
     	throw new ResourceNotFoundException();

@@ -1,8 +1,6 @@
 package com.genuine.lifelog.controller;
 
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +16,9 @@ import com.genuine.lifelog.dto.request.NoteRequest;
 import com.genuine.lifelog.dto.request.SearchNoteRequest;
 import com.genuine.lifelog.dto.response.LifeLogResponse;
 import com.genuine.lifelog.dto.response.NoteResponse;
-import com.genuine.lifelog.exception.ValidationException;
 import com.genuine.lifelog.service.LifeLogService;
-import com.genuine.lifelog.utility.LifeLogUtils;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
@@ -37,89 +32,70 @@ public class LifeLogController {
     }
 
     @GetMapping("notes")
-    public ResponseEntity<LifeLogResponse> getNotes(Pageable pageable) throws Exception {
+    public ResponseEntity<LifeLogResponse> getNotes(Pageable pageable){
         LifeLogResponse res = new LifeLogResponse();
         Page<NoteResponse> noteResPage = this.service.getAllNotes(pageable);
         res.setStatus("success");
         if (noteResPage == null || noteResPage.getContent().size() == 0)
-            res.setMessage("No note is present");
+            res.success("No note is present", noteResPage);
         else
-            res.setMessage("Notes have been successfully fetched!");
-        res.setData(noteResPage.getContent());
-        res.setPagenation(noteResPage);
+        	res.success("Notes have been successfully fetched!", noteResPage);
 
         return ResponseEntity.ok(res);
     }
     
 
     @GetMapping("notes/{noteId}")
-    public ResponseEntity<LifeLogResponse> getNote(@PathVariable @NotBlank String noteId) throws Exception {
+    public ResponseEntity<LifeLogResponse> getNote(@Valid @PathVariable Long noteId){
         LifeLogResponse res = new LifeLogResponse();
-        if(!LifeLogUtils.isNumber(noteId)) throw new ValidationException(List.of("Note Id should be a number!"));
-        NoteResponse noteRes = this.service.getNoteById(Long.valueOf(noteId));
-        res.setStatus("success");
-        res.setMessage("Note has been successfully fetched!");
-        res.setData(noteRes);
-        res.noPagenation();
+        NoteResponse noteRes = this.service.getNoteById(noteId);
+        res.success("Note has been successfully fetched!", noteRes);
 
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("notes/trash")
-    public ResponseEntity<LifeLogResponse> getTrashedNotes(Pageable pageable) throws Exception {    	
+    public ResponseEntity<LifeLogResponse> getTrashedNotes(Pageable pageable){    	
         LifeLogResponse res = new LifeLogResponse();
         Page<NoteResponse> noteRes = this.service.getTrashedNotes(pageable);
-        res.setStatus("success");
         if (noteRes == null || noteRes.getContent().size() == 0)
-            res.setMessage("No trashed notes");
+        	res.success("No trashed notes", noteRes);
         else
-            res.setMessage("Trashed notes have been successfully fetched!");
-        res.setData(noteRes.getContent());
-        
+            res.success("Trashed notes have been successfully fetched!", noteRes);        
 
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("notes")
-    public ResponseEntity<LifeLogResponse> createNote(@Valid @RequestBody NoteRequest note) throws Exception {
+    public ResponseEntity<LifeLogResponse> createNote(@Valid @RequestBody NoteRequest note){
         LifeLogResponse res = new LifeLogResponse();
         NoteResponse noteRes = this.service.addNote(note);
-        res.setStatus("success");
-        res.setMessage("Note has been successfully added!");
-        res.setData(noteRes);
-        res.noPagenation();
-        
+        res.success("Note has been successfully added!", noteRes);        
 
         return ResponseEntity.status(201).body(res);
     }
 
     @PutMapping("notes/{noteId}")
-    public ResponseEntity<LifeLogResponse> updateNote(@RequestBody NoteRequest note, @PathVariable @NotBlank String noteId) throws Exception {
+    public ResponseEntity<LifeLogResponse> updateNote(@Valid @RequestBody NoteRequest note, @Valid @PathVariable Long noteId){
         LifeLogResponse res = new LifeLogResponse();
-        note.setId(Long.parseLong(noteId));
+        note.setId(noteId);
         NoteResponse noteRes = this.service.updateNote(note);
-        res.setStatus("success");
-        res.setMessage("Note has been successfully updated!");
-        res.setData(noteRes);
-        res.noPagenation();
+        res.success("Note has been successfully updated!", noteRes);
 
         return ResponseEntity.ok(res);
     }
 
     @PutMapping("notes/trash/{noteId}")
-    public ResponseEntity<LifeLogResponse> trashNote(@PathVariable @NotBlank String noteId) throws Exception {
+    public ResponseEntity<LifeLogResponse> trashNote(@Valid @PathVariable Long noteId){
         LifeLogResponse res = new LifeLogResponse();
         NoteResponse noteRes = this.service.trashNote(noteId);
-        res.setStatus("success");
-        res.setMessage("Note has been successfully trashed!");
-        res.setData(noteRes);
-        res.noPagenation();
+        res.success("Note has been successfully trashed!", noteRes);
 
         return ResponseEntity.ok(res);
     }
     
     @PostMapping("notes/search")
-    public ResponseEntity<LifeLogResponse> searchNotes(@RequestBody @NotNull SearchNoteRequest request, Pageable pageable) throws Exception {
+    public ResponseEntity<LifeLogResponse> searchNotes(@RequestBody @NotNull SearchNoteRequest request, Pageable pageable){
     	LifeLogResponse res = new LifeLogResponse();
     	Page<NoteResponse> noteResPage;
 //    	if(request != null && (!LifeLogUtils.checkNotBlank(request.getContent()) && !LifeLogUtils.checkNotBlank(request.getTitle()) && (request.getTags() == null || request.getTags().isEmpty()))) {
@@ -131,11 +107,9 @@ public class LifeLogController {
     	
         res.setStatus("success");
         if (noteResPage == null || noteResPage.getContent().size() == 0)
-            res.setMessage("No note is found");
+            res.success("No note is found", noteResPage);
         else
-            res.setMessage("Notes have been successfully fetched!");
-        res.setData(noteResPage.getContent());
-        res.setPagenation(noteResPage);
+            res.success("Notes have been successfully fetched!", noteResPage);
 
         return ResponseEntity.ok(res);
 
