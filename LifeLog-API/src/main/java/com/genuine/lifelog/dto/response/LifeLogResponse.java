@@ -22,6 +22,12 @@ public class LifeLogResponse extends PagedResponse {
 	private List<String> errorList;
 	private Object data;
 
+	public void success(String message) {
+		this.message = message;
+		this.data = null;
+		this.pageInfo = null;
+	}
+	
 	public void success(String message, Object data) {
 		this.message = message;
 		this.data = data;

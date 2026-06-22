@@ -111,8 +111,11 @@ public class LifeLogServiceImpl implements LifeLogService {
     }
 
     @Override
-    public NoteResponse deleteNote(NoteRequest note) {
-        return null;
+    public void deleteNote(Long noteId) {
+    	if (!noteRepository.existsById(noteId)) {
+    	    throw new ResourceNotFoundException("Note not found with id " + noteId);
+    	}
+       	this.noteRepository.deleteById(noteId);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.genuine.lifelog.exception;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -90,7 +91,22 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ExceptionResponse> resourceNotFound(EmptyResultDataAccessException e) {
 
+        ExceptionResponse response =
+                new ExceptionResponse(
+                        "failure",
+                        "Record has already been deleted or not present.",
+                        null,
+                        List.of(e.getMessage())
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> generalException(Exception e) {
 

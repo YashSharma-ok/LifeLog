@@ -4,6 +4,7 @@ package com.genuine.lifelog.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,15 @@ public class LifeLogController {
         LifeLogResponse res = new LifeLogResponse();
         NoteResponse noteRes = this.service.trashNote(noteId);
         res.success("Note has been successfully trashed!", noteRes);
+
+        return ResponseEntity.ok(res);
+    }
+    
+    @DeleteMapping("notes/{noteId}")
+    public ResponseEntity<LifeLogResponse> deleteNote(@Valid @PathVariable Long noteId){
+        LifeLogResponse res = new LifeLogResponse();
+        this.service.deleteNote(noteId);
+        res.success("Note has been successfully deleted!");
 
         return ResponseEntity.ok(res);
     }
